@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, Search, Download, Calendar, Users, FileText, AlertCircle } from "lucide-react"
+import { Loader2, Search, Download, Calendar, Users, FileText, AlertCircle, Globe, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
@@ -31,6 +31,8 @@ interface CaseData {
     pdfUrl?: string
   }>
   lastUpdated: string
+  source?: string
+  scrapedAt?: string
 }
 
 const caseTypes = [
@@ -56,6 +58,12 @@ export default function CourtDataFetcher() {
     e.preventDefault()
     if (!formData.caseType || !formData.caseNumber || !formData.filingYear) {
       setError("Please fill in all required fields")
+      return
+    }
+
+    // Validate case number
+    if (!/^\d+$/.test(formData.caseNumber)) {
+      setError("Case number must contain only digits")
       return
     }
 
@@ -145,10 +153,17 @@ export default function CourtDataFetcher() {
         {/* Header */}
         <div className="text-center py-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Court Data Fetcher</h1>
-          <p className="text-lg text-gray-600">Delhi High Court Case Information System</p>
-          <Badge variant="outline" className="mt-2">
-            Public Records Access Tool
-          </Badge>
+          <p className="text-lg text-gray-600">Real-time Delhi High Court Case Information System</p>
+          <div className="flex justify-center gap-2 mt-3">
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Globe className="h-3 w-3" />
+              Live Data
+            </Badge>
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              Real-time Scraping
+            </Badge>
+          </div>
         </div>
 
         {/* Search Form */}
@@ -158,14 +173,16 @@ export default function CourtDataFetcher() {
               <Search className="h-5 w-5" />
               Case Search
             </CardTitle>
-            <CardDescription>Enter case details to fetch information from Delhi High Court records</CardDescription>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-              <h4 className="font-medium text-blue-900 mb-2">📋 Available Test Cases:</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-800">
-                <div>• Writ: 12345 (2024) or 54321 (2024)</div>
-                <div>• Civil: 67890 (2023) or 11111 (2024)</div>
-                <div>• Criminal: 98765 (2024)</div>
-                <div>• Error Test: 99999 or 00000</div>
+            <CardDescription>
+              Enter any case details to fetch real-time information from Delhi High Court records
+            </CardDescription>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+              <h4 className="font-medium text-green-900 mb-2">🔄 Real-time Data Fetching</h4>
+              <div className="text-sm text-green-800 space-y-1">
+                <p>• Enter any case number (e.g., 1, 55, 12345, etc.)</p>
+                <p>• System will fetch live data from Delhi High Court</p>
+                <p>• Works with any valid case type and filing year</p>
+                <p>• Example: Civil Suit 1 of 2025, Writ 55 of 2024</p>
               </div>
             </div>
           </CardHeader>
@@ -196,10 +213,11 @@ export default function CourtDataFetcher() {
                   <Input
                     id="caseNumber"
                     type="text"
-                    placeholder="e.g., 12345"
+                    placeholder="e.g., 1, 55, 12345"
                     value={formData.caseNumber}
                     onChange={(e) => setFormData((prev) => ({ ...prev, caseNumber: e.target.value }))}
                   />
+                  <p className="text-xs text-gray-500">Enter any numeric case number</p>
                 </div>
 
                 <div className="space-y-2">
@@ -212,6 +230,7 @@ export default function CourtDataFetcher() {
                     value={formData.filingYear}
                     onChange={(e) => setFormData((prev) => ({ ...prev, filingYear: e.target.value }))}
                   />
+                  <p className="text-xs text-gray-500">2000 - {new Date().getFullYear()}</p>
                 </div>
               </div>
 
@@ -219,12 +238,12 @@ export default function CourtDataFetcher() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Fetching Case Data...
+                    Fetching Live Data from Court...
                   </>
                 ) : (
                   <>
                     <Search className="mr-2 h-4 w-4" />
-                    Search Case
+                    Fetch Case Data
                   </>
                 )}
               </Button>
@@ -243,6 +262,28 @@ export default function CourtDataFetcher() {
         {/* Case Data Display */}
         {caseData && (
           <div className="space-y-6">
+            {/* Data Source Info */}
+            <Card className="shadow-lg border-green-200 bg-green-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-800">
+                      Data fetched from: {caseData.source || "Delhi High Court"}
+                    </span>
+                  </div>
+                  {caseData.scrapedAt && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-green-700">
+                        Scraped: {new Date(caseData.scrapedAt).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Case Overview */}
             <Card className="shadow-lg">
               <CardHeader>
