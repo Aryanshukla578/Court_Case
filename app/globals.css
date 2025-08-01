@@ -149,32 +149,12 @@
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
   }
 
-  /* Animation utilities */
+  /* Animation utilities using standard Tailwind */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+    @apply animate-in fade-in duration-300;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(10px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    @apply animate-in slide-in-from-bottom-2 duration-300;
   }
 }
