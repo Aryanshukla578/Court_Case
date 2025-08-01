@@ -6,9 +6,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Court Data Fetcher - Delhi High Court Case Information",
-  description: "Access and search Delhi High Court case information, orders, and judgments",
-  keywords: "court, delhi high court, case search, legal records, judgments, orders",
+  title: "Court Data Fetcher",
+  description: "Delhi High Court Case Information System",
     generator: 'v0.dev'
 }
 
